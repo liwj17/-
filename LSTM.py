@@ -78,3 +78,37 @@ plt.plot(scaler.inverse_transform(dataset))
 plt.plot(trainPredictPlot)
 plt.plot(testPredictPlot)
 plt.show()
+#client
+table=pd.DataFrame(client.groupby('recordName')['predictEmotion'].count()>20)
+df_client= pd.DataFrame(columns=['ID','last2','last5', 'last10', 'last15','last20','frist5','frist10','full'])
+i=0
+for index in table.index:
+    if table.loc[index].any():
+        last2=client[client['recordName']==index][-2:].sum().predictEmotion
+        last5=client[client['recordName']==index][-5:].sum().predictEmotion
+        last10=client[client['recordName']==index][-10:].sum().predictEmotion
+        last15=client[client['recordName']==index][-15:].sum().predictEmotion
+        last20=client[client['recordName']==index][-20:].sum().predictEmotion
+        frist5=client[client['recordName']==index][:5].sum().predictEmotion
+        frist10=client[client['recordName']==index][:10].sum().predictEmotion
+        full=client[client['recordName']==index].sum().predictEmotion
+        s=pd.DataFrame({"ID":index,"last2":last2,"last5":last5,"last10":last10,"last15":last15,"last20":last20,"frist5":frist5,"frist10":frist10,"full":full },index=[i])
+        i=i+1
+        df_client = df_client.append(s)
+#数据预处理server
+table=pd.DataFrame(client.groupby('recordName')['predictEmotion'].count()>20)
+df_client= pd.DataFrame(columns=['ID','last2','last5', 'last10', 'last15','last20','frist5','frist10','full'])
+i=0
+for index in table.index:
+    if table.loc[index].any():
+        last2=client[client['recordName']==index][-2:].sum().predictEmotion
+        last5=client[client['recordName']==index][-5:].sum().predictEmotion
+        last10=client[client['recordName']==index][-10:].sum().predictEmotion
+        last15=client[client['recordName']==index][-15:].sum().predictEmotion
+        last20=client[client['recordName']==index][-20:].sum().predictEmotion
+        frist5=client[client['recordName']==index][:5].sum().predictEmotion
+        frist10=client[client['recordName']==index][:10].sum().predictEmotion
+        full=client[client['recordName']==index].sum().predictEmotion
+        s=pd.DataFrame({"ID":index,"last2":last2,"last5":last5,"last10":last10,"last15":last15,"last20":last20,"frist5":frist5,"frist10":frist10,"full":full },index=[i])
+        i=i+1
+        df_client = df_client.append(s)
