@@ -245,4 +245,70 @@ size_mapping = {
            'True': 1}
 result3['是否县区'] = result3['是否县区'].map(size_mapping)    
 #重置索引方式：
-data_train_x.reset_index(drop=True)  
+data_train_x.reset_index(drop=True) 
+#####################################
+import numpy
+import matplotlib.pyplot as plt
+from pandas import read_csv
+import pandas as pd
+import math
+%matplotlib inline
+# load the dataset
+dataframe = read_csv(r'C:\Users\l84105658\Desktop\--master\--master\Desktop\sentiment.csv')
+cv = pd.read_excel(r'C:\Users\l84105658\Desktop\CX.xlsx')
+server=dataframe[dataframe['speaker']==0]
+client=dataframe[dataframe['speaker']==1]
+#获取顾客的统计数据
+table=pd.DataFrame(client.groupby('recordName')['predictEmotion'].count()>20)
+df_client= pd.DataFrame(columns=['ID','last2','last5', 'last10', 'last15','last20','frist5','frist10','full'])
+i=0
+for index in table.index:
+    if table.loc[index].any():
+        last2=client[client['recordName']==index][-2:].sum().predictEmotion
+        last5=client[client['recordName']==index][-5:].sum().predictEmotion
+        last10=client[client['recordName']==index][-10:].sum().predictEmotion
+        last15=client[client['recordName']==index][-15:].sum().predictEmotion
+        last20=client[client['recordName']==index][-20:].sum().predictEmotion
+        frist5=client[client['recordName']==index][:5].sum().predictEmotion
+        frist10=client[client['recordName']==index][:10].sum().predictEmotion
+        full=client[client['recordName']==index].sum().predictEmotion
+        s=pd.DataFrame({"ID":index,"last2":last2,"last5":last5,"last10":last10,"last15":last15,"last20":last20,"frist5":frist5,"frist10":frist10,"full":full },index=[i])
+        i=i+1
+        df_client = df_client.append(s)
+#获取server数据
+table=pd.DataFrame(server.groupby('recordName')['predictEmotion'].count()>20)
+df_server= pd.DataFrame(columns=['ID','slast2','slast5', 'slast10', 'slast15','slast20','sfrist5','sfrist10','sfull'])
+i=0
+for index in table.index:
+    if table.loc[index].any():
+        slast2=server[server['recordName']==index][-2:].sum().predictEmotion
+        slast5=server[server['recordName']==index][-5:].sum().predictEmotion
+        slast10=server[server['recordName']==index][-10:].sum().predictEmotion
+        slast15=server[server['recordName']==index][-15:].sum().predictEmotion
+        slast20=server[server['recordName']==index][-20:].sum().predictEmotion
+        sfrist5=server[server['recordName']==index][:5].sum().predictEmotion
+        sfrist10=server[server['recordName']==index][:10].sum().predictEmotion
+        sfull=server[server['recordName']==index].sum().predictEmotion
+        s=pd.DataFrame({"ID":index,"slast2":slast2,"slast5":slast5,"slast10":slast10,"slast15":slast15,"slast20":slast20,"sfrist5":sfrist5,"sfrist10":sfrist10,"sfull":sfull },index=[i])
+        i=i+1
+        df_server = df_server.append(s)
+#合并两个表
+result=pd.merge(df_server,df_client, on='ID')
+result1 = pd.merge(result,cv, on='ID')
+#获取标签
+label=result1.ix[:,[-1]]
+result1.drop('isr',axis=1, inplace=True)
+#填补缺失值
+label2=label.fillna(method='pad')
+result2=result1.fillna(result1.mean())
+#拆分训练与测试数据
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(result2, label2, test_size=0.2, random_state=0)
+#模型训练
+from sklearn import tree
+criterions=['gini','entropy']
+for criterion in criterions:
+    clf = tree.DecisionTreeClassifier(criterion=criterion)
+    clf.fit(X_train, y_train)
+    print(criterion,"Training score:%f"%(clf.score(X_train,y_train)))
+    print(criterion,"Testing score:%f"%(clf.score(X_test,y_test)))
