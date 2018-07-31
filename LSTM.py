@@ -112,3 +112,13 @@ for index in table.index:
         s=pd.DataFrame({"ID":index,"last2":last2,"last5":last5,"last10":last10,"last15":last15,"last20":last20,"frist5":frist5,"frist10":frist10,"full":full },index=[i])
         i=i+1
         df_client = df_client.append(s)
+c='Rec24201605311509334037'
+b=dataframe[dataframe['recordName']==c]
+from matplotlib import pyplot 
+pyplot.figure() 
+pyplot.plot(b[b['speaker']==0]['predictEmotionProbability'].values,'r--') 
+pyplot.plot(b[b['speaker']==1]['predictEmotionProbability'].values) 
+#pyplot.plot(b[b['speaker']==1]['predictEmotionProbability'].values) 
+from matplotlib import pyplot 
+pyplot.figure() 
+pyplot.plot(Rec12201603111238135018[Rec12201603111238135018['speaker']==0]['predictEmotionProbability'].values) 
