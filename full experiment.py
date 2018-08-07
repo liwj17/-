@@ -132,3 +132,22 @@ for weights in ['uniform', 'distance']:
     clf.fit(X_train,y_train)
     print(clf.score(X_test,y_test))
 hello
+tablecount=dataframe.groupby('recordName')['score2'].count()
+table=pd.DataFrame(tablecount>20)
+df_dataframe= pd.DataFrame(columns=['ID','last2','last5','last10','last15','last20','frist5','frist10','frist15','full','number'])
+i=0
+for index in table.index:
+    if table.loc[index].any():
+        last2=dataframe[dataframe['recordName']==index][-2:].sum().score2
+        last5=dataframe[dataframe['recordName']==index][-5:].sum().score2
+        last10=dataframe[dataframe['recordName']==index][-10:].sum().score2
+        last15=dataframe[dataframe['recordName']==index][-15:].sum().score2
+        last20=dataframe[dataframe['recordName']==index][-20:].sum().score2
+        frist5=dataframe[dataframe['recordName']==index][:5].sum().score2
+        frist10=dataframe[dataframe['recordName']==index][:10].sum().score2
+        frist15=dataframe[dataframe['recordName']==index][:15].sum().score2
+        full=dataframe[dataframe['recordName']==index].sum().score2
+        number=tablecount.loc[index]
+        s=pd.DataFrame({"ID":index,"last2":last2,"last5":last5,"last10":last10,"last15":last15,"last20":last20,"frist5":frist5,"frist10":frist10,"frist15":frist15,"full":full ,"number":number},index=[i])
+        i=i+1
+        df_dataframe = df_dataframe.append(s)
