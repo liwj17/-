@@ -151,3 +151,24 @@ for index in table.index:
         s=pd.DataFrame({"ID":index,"last2":last2,"last5":last5,"last10":last10,"last15":last15,"last20":last20,"frist5":frist5,"frist10":frist10,"frist15":frist15,"full":full ,"number":number},index=[i])
         i=i+1
         df_dataframe = df_dataframe.append(s)
+#时间序列处理
+import numpy
+import matplotlib.pyplot as plt
+from pandas import read_csv
+import pandas as pd
+import math
+from keras.preprocessing.sequence import pad_sequences
+%matplotlib inline
+# load the dataset
+dataframe = read_csv(r'C:\Users\l84105658\Desktop\--master\--master\Desktop\sentiment.csv')
+cv = pd.read_excel(r'C:\Users\l84105658\Desktop\CX.xlsx')#读取数据
+datax=[]
+table=dataframe.groupby('recordName')['score2'].count()
+table=pd.DataFrame((table>50)&(table<100))
+for index in table.index:
+    if table.loc[index].any():
+        datax.append(dataframe[dataframe['recordName']==index]['score2'].values)
+        #print(index)
+
+X = pad_sequences(datax, maxlen=100, dtype='float32')#长度不足的0来填充
+cv[['ID','isr']].drop_duplicates()
